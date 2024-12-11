@@ -4,5 +4,7 @@ spring:
     mongodb:
       uri: mongodb+srv://${DB_USER}:${DB_PASSWORD}@cluster0.qkgor.mongodb.net/${DB_NAME:webflux-course}?retryWrites=true&w=majority&appName=Cluster0
       auto-index-creation: true
+      port: 27017
+      host: {IP_ADDRESS}
   application:
     name: webflux-course
