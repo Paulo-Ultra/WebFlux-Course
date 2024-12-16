@@ -83,4 +83,23 @@ class UserServiceTest {
 
         Mockito.verify(userRepository, times(1)).findAll();
     }
+
+    @Test
+    void testUpdate() {
+        UserRequest request = new UserRequest("Paulo", "paulo@mail.com","123");
+        User entity = User.builder().build();
+
+        when(mapper.toEntity(any(), any(User.class))).thenReturn(entity);
+        when(userRepository.findById(anyString())).thenReturn(Mono.just(entity));
+        when(userRepository.save(any(User.class))).thenReturn(Mono.just(USER));
+
+        Mono<User> result = userService.update("1234", request);
+
+        StepVerifier.create(result)
+                .expectNextMatches(user -> user.getClass() == User.class)
+                .expectComplete()
+                .verify();
+
+        Mockito.verify(userRepository, times(1)).save(any(User.class));
+    }
 }
