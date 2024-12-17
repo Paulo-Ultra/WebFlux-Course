@@ -33,6 +33,8 @@ class UserControllerImplTest {
     public static final String EMAIL = "paulo@mail.com";
     public static final String PASSWORD = "123";
     public static final String NAME_WITH_WHITE_SPACES = " Paulo";
+    public static final String BASE_URI = "/users";
+    public static final User USER = User.builder().build();
 
     @Autowired
     private WebTestClient webTestClient;
@@ -48,9 +50,9 @@ class UserControllerImplTest {
     void testSaveWithSuccess() {
         final var request = new UserRequest(NAME, EMAIL, PASSWORD);
 
-        when(userService.save(any(UserRequest.class))).thenReturn(just(User.builder().build()));
+        when(userService.save(any(UserRequest.class))).thenReturn(just(USER));
 
-        webTestClient.post().uri("/users")
+        webTestClient.post().uri(BASE_URI)
                 .contentType(APPLICATION_JSON)
                 .body(fromValue(request))
                 .exchange()
@@ -64,13 +66,13 @@ class UserControllerImplTest {
     void testSaveWithBadRequest() {
         final var request = new UserRequest(NAME_WITH_WHITE_SPACES, EMAIL, PASSWORD);
 
-        webTestClient.post().uri("/users")
+        webTestClient.post().uri(BASE_URI)
                 .contentType(APPLICATION_JSON)
                 .body(fromValue(request))
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
-                .jsonPath("$.path").isEqualTo("/users")
+                .jsonPath("$.path").isEqualTo(BASE_URI)
                 .jsonPath("$.status").isEqualTo(BAD_REQUEST.value())
                 .jsonPath("$.error").isEqualTo("Validation error")
                 .jsonPath("$.message").isEqualTo("Error on validation attributes")
@@ -84,10 +86,10 @@ class UserControllerImplTest {
     void testFindByIdWithSuccess() {
         final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
 
-        when(userService.findById(anyString())).thenReturn(just(User.builder().build()));
+        when(userService.findById(anyString())).thenReturn(just(USER));
         when(mapper.toResponse(any(User.class))).thenReturn(userResponse);
 
-        webTestClient.get().uri("/users/" + ID)
+        webTestClient.get().uri(BASE_URI + "/" + ID)
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -106,10 +108,10 @@ class UserControllerImplTest {
     void testFindAllWithSuccess() {
         final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
 
-        when(userService.findAll()).thenReturn(Flux.just(User.builder().build()));
+        when(userService.findAll()).thenReturn(Flux.just(USER));
         when(mapper.toResponse(any(User.class))).thenReturn(userResponse);
 
-        webTestClient.get().uri("/users")
+        webTestClient.get().uri(BASE_URI)
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -129,10 +131,10 @@ class UserControllerImplTest {
         final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
         final var userRequest = new UserRequest(NAME, EMAIL, PASSWORD);
 
-        when(userService.update(anyString(), any(UserRequest.class))).thenReturn(just(User.builder().build()));
+        when(userService.update(anyString(), any(UserRequest.class))).thenReturn(just(USER));
         when(mapper.toResponse(any(User.class))).thenReturn(userResponse);
 
-        webTestClient.patch().uri("/users/" + ID)
+        webTestClient.patch().uri(BASE_URI + "/" + ID)
                 .contentType(APPLICATION_JSON)
                 .body(fromValue(userRequest))
                 .exchange()
@@ -151,8 +153,8 @@ class UserControllerImplTest {
     @DisplayName("Test endpoint delete with success")
     void testDeleteWithSuccess() {
 
-        when(userService.delete(anyString())).thenReturn(just(User.builder().build()));
-        webTestClient.delete().uri("/users/" + ID)
+        when(userService.delete(anyString())).thenReturn(just(USER));
+        webTestClient.delete().uri(BASE_URI + "/" + ID)
                 .exchange()
                 .expectStatus().isOk();
 
