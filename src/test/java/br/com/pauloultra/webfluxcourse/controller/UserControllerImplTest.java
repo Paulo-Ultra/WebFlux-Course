@@ -81,7 +81,7 @@ class UserControllerImplTest {
 
     @Test
     @DisplayName("Test endpoint find by id with success")
-    void findById() {
+    void testFindByIdWithSuccess() {
         final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
 
         when(userService.findById(anyString())).thenReturn(just(User.builder().build()));
@@ -103,7 +103,7 @@ class UserControllerImplTest {
 
     @Test
     @DisplayName("Test endpoint find all with success")
-    void findAll() {
+    void testFindAllWithSuccess() {
         final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
 
         when(userService.findAll()).thenReturn(Flux.just(User.builder().build()));
@@ -125,7 +125,7 @@ class UserControllerImplTest {
 
     @Test
     @DisplayName("Test endpoint update with success")
-    void update() {
+    void testUpdateWithSucces() {
         final var userResponse = new UserResponse(ID, NAME, EMAIL, PASSWORD);
         final var userRequest = new UserRequest(NAME, EMAIL, PASSWORD);
 
@@ -148,6 +148,14 @@ class UserControllerImplTest {
     }
 
     @Test
-    void delete() {
+    @DisplayName("Test endpoint delete with success")
+    void testDeleteWithSuccess() {
+
+        when(userService.delete(anyString())).thenReturn(just(User.builder().build()));
+        webTestClient.delete().uri("/users/" + ID)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(userService).delete(anyString());
     }
 }
